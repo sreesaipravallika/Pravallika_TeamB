@@ -1,0 +1,67 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "name": "Sree Sai Pravallika.B",
+      "email": "sreesaipravallika26@gmail.com",
+      "password": "$2a$10$IzmAO.TtEowUH7ihdTvZU.A4rkJQcp5w93s0Rqd.mzbq6CmgxFkQ2",
+      "role": "customer",
+      "phone": "7989876487",
+      "location": "Hyd",
+      "business_name": null,
+      "service_category": null,
+      "created_at": "2026-03-12T14:08:37.518Z"
+    },
+    {
+      "id": 2,
+      "name": "pravallika",
+      "email": "sreesaipravallika@gmail.com",
+      "password": "$2a$10$pJ23FMzAJATNOEbgCywsaukv3aEUs5xk4rXJ0.4TizEeRBiXyCmwa",
+      "role": "customer",
+      "phone": "7798987648",
+      "location": "Hyd",
+      "business_name": null,
+      "service_category": null,
+      "created_at": "2026-03-23T13:55:55.334Z"
+    },
+    {
+      "id": 3,
+      "name": "Deepika",
+      "email": "deepika@gmail.com",
+      "password": "$2a$10$pPgOgNxfMa.sQ.6s8SwOeOo1SFKodl5KWkUnEIgc0mpdQ0ZhZ50uq",
+      "role": "customer",
+      "phone": "7678965780",
+      "location": "hyd",
+      "business_name": null,
+      "service_category": null,
+      "created_at": "2026-03-24T13:37:26.395Z"
+    },
+    {
+      "id": 4,
+      "name": "Sree Sai Pravallika",
+      "email": "sreesaipravallika261@gmail.com",
+      "password": "$2a$10$/hVoBoIXP.SQr4ox9WWW4uYdM1yWn5ZthhgRJ4Zl/g2M8mBR5eq5S",
+      "role": "customer",
+      "phone": "7989876487",
+      "location": "Sec",
+      "business_name": null,
+      "service_category": null,
+      "created_at": "2026-03-24T13:50:42.623Z"
+    },
+    {
+      "id": 5,
+      "name": "Test User",
+      "email": "testuser123@example.com",
+      "password": "$2a$10$muf4kFf/IRqtV8gLae4TPudAbX2RApNp1ZJ6Ep03Af/pnKvpXj2P2",
+      "role": "customer",
+      "phone": "1234567890",
+      "location": "Mumbai",
+      "business_name": null,
+      "service_category": null,
+      "created_at": "2026-03-24T14:03:31.003Z"
+    }
+  ],
+  "bookings": [],
+  "nextUserId": 6,
+  "nextBookingId": 1
+}

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Service Provider Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header Section -->
+        <header>
+            <h1>🔍 Service Provider Finder</h1>
+            <p>Find trusted service providers in your area</p>
+        </header>
+
+        <!-- Search Section -->
+        <div class="search-box">
+            <label for="location">📍 Enter Your City:</label>
+            <input 
+                type="text" 
+                id="location" 
+                placeholder="e.g., Mumbai, Delhi, Bangalore"
+            >
+            <button onclick="searchProviders()">Search</button>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results">
+            <!-- Provider cards will appear here -->
+        </div>
+
+        <!-- No Results Message -->
+        <div id="no-results" style="display: none;">
+            <p>❌ No services available in your area.</p>
+            <p>Try: Mumbai, Delhi, Bangalore, Pune, or Chennai</p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

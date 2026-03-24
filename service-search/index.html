@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickServ - Service Search</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="logo">⚡ QuickServ</div>
+            <p class="tagline">Find trusted local service providers</p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Search Section -->
+            <section class="search-section">
+                <h1 class="search-title">Search for Services</h1>
+                <p class="search-subtitle">Find plumbers, electricians, tutors, and more...</p>
+
+                <!-- Search Bar -->
+                <div class="search-bar-wrapper">
+                    <div class="search-bar">
+                        <span class="search-icon">🔍</span>
+                        <input 
+                            type="text" 
+                            id="searchInput" 
+                            class="search-input" 
+                            placeholder="Search for services (e.g., plumber, electrician, tutor...)"
+                            autocomplete="off"
+                        >
+                        <button id="clearBtn" class="clear-btn" title="Clear search">✕</button>
+                        <button id="searchBtn" class="search-btn">Search</button>
+                    </div>
+                </div>
+
+                <!-- Result Count -->
+                <div id="resultCount" class="result-count"></div>
+            </section>
+
+            <!-- Results Section -->
+            <section class="results-section">
+                <div id="resultsContainer" class="results-grid">
+                    <!-- Service cards will be dynamically inserted here -->
+                </div>
+
+                <!-- No Results Message -->
+                <div id="noResults" class="no-results" style="display: none;">
+                    <div class="no-results-icon">🔍</div>
+                    <h3>No services found</h3>
+                    <p>Try searching for "plumber", "electrician", "tutor", or "AC repair"</p>
+                </div>
+
+                <!-- Initial State Message -->
+                <div id="initialState" class="initial-state">
+                    <div class="initial-icon">🎯</div>
+                    <h3>Start searching for services</h3>
+                    <p>Type in the search box above to find service providers</p>
+                    <div class="popular-searches">
+                        <p class="popular-label">Popular searches:</p>
+                        <div class="popular-tags">
+                            <button class="popular-tag" data-search="plumber">Plumber</button>
+                            <button class="popular-tag" data-search="electrician">Electrician</button>
+                            <button class="popular-tag" data-search="tutor">Tutor</button>
+                            <button class="popular-tag" data-search="AC repair">AC Repair</button>
+                            <button class="popular-tag" data-search="cleaning">Cleaning</button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 QuickServ. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="data.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

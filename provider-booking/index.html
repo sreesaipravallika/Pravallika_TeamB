@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>QuickServ - Service Provider Booking</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>⚡ QuickServ Provider Booking</h1>
+            <p class="subtitle">Find and book trusted service providers in your area</p>
+        </header>
+
+        <!-- Location & Filters Section -->
+        <section class="filters-section">
+            <div class="filter-group">
+                <label for="location-input">📍 Enter Your City:</label>
+                <input 
+                    type="text" 
+                    id="location-input" 
+                    placeholder="e.g., Mumbai, Delhi, Bangalore"
+                    class="input-field"
+                >
+                <button id="search-btn" class="btn btn-primary">Search Providers</button>
+            </div>
+
+            <div class="filter-controls">
+                <div class="filter-item">
+                    <label for="category-filter">Category:</label>
+                    <select id="category-filter" class="select-field">
+                        <option value="all">All Categories</option>
+                        <option value="Plumbing">Plumbing</option>
+                        <option value="Electrical">Electrical</option>
+                        <option value="Cleaning">Cleaning</option>
+                        <option value="Salon">Salon</option>
+                        <option value="Carpentry">Carpentry</option>
+                        <option value="Painting">Painting</option>
+                    </select>
+                </div>
+
+                <div class="filter-item">
+                    <label for="sort-filter">Sort By:</label>
+                    <select id="sort-filter" class="select-field">
+                        <option value="default">Default</option>
+                        <option value="price-low">Price: Low to High</option>
+                        <option value="price-high">Price: High to Low</option>
+                        <option value="rating">Highest Rating</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Results Count -->
+        <div id="results-info" class="results-info"></div>
+
+        <!-- Provider Cards Container -->
+        <section id="providers-container" class="providers-grid">
+            <!-- Provider cards will be dynamically inserted here -->
+        </section>
+
+        <!-- No Results Message -->
+        <div id="no-results" class="no-results" style="display: none;">
+            <div class="no-results-icon">🔍</div>
+            <h2>No Services Available</h2>
+            <p>We couldn't find any service providers in your area.</p>
+            <p>Try searching for a different location.</p>
+        </div>
+
+        <!-- My Bookings Section -->
+        <section class="bookings-section">
+            <h2>📋 My Bookings</h2>
+            <div id="bookings-container" class="bookings-list">
+                <!-- Bookings will be displayed here -->
+            </div>
+        </section>
+    </div>
+
+    <!-- Booking Confirmation Modal -->
+    <div id="booking-modal" class="modal" style="display: none;">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <div class="modal-icon">✅</div>
+            <h2>Booking Confirmed!</h2>
+            <div id="booking-details"></div>
+            <button id="close-modal-btn" class="btn btn-primary">Close</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

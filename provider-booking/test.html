@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test - Provider Booking</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-box {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #667eea;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #5568d3;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-box">
+        <h1>🧪 Provider Booking System - Test Page</h1>
+        <p>This page will help you verify that all files are working correctly.</p>
+        
+        <div id="file-check"></div>
+        <div id="js-check"></div>
+        
+        <div class="info">
+            <strong>📂 File Locations:</strong><br>
+            Make sure these files are in the same folder:<br>
+            • <code>index.html</code><br>
+            • <code>style.css</code><br>
+            • <code>script.js</code>
+        </div>
+        
+        <button onclick="window.location.href='index.html'">
+            ✅ Open Main Application
+        </button>
+        
+        <button onclick="testLocalStorage()">
+            🧪 Test localStorage
+        </button>
+        
+        <div id="test-results"></div>
+    </div>
+    
+    <div class="test-box">
+        <h2>📋 Quick Start Guide</h2>
+        <ol>
+            <li>Click "Open Main Application" button above</li>
+            <li>Enter a city name: <strong>Mumbai</strong>, <strong>Delhi</strong>, <strong>Bangalore</strong>, or <strong>Pune</strong></li>
+            <li>Click "Search Providers" button</li>
+            <li>You should see provider cards appear</li>
+            <li>Click on a time slot to see the price change</li>
+            <li>Click "Book Now" to make a booking</li>
+        </ol>
+    </div>
+    
+    <div class="test-box">
+        <h2>🔍 Troubleshooting</h2>
+        <div id="browser-info"></div>
+        <div id="console-check"></div>
+    </div>
+
+    <script>
+        // Check if files exist
+        window.addEventListener('load', function() {
+            // Check CSS
+            fetch('style.css')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('file-check').innerHTML += 
+                            '<div class="status success">✅ style.css found</div>';
+                    } else {
+                        document.getElementById('file-check').innerHTML += 
+                            '<div class="status error">❌ style.css not found</div>';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('file-check').innerHTML += 
+                        '<div class="status error">❌ style.css not found</div>';
+                });
+            
+            // Check JS
+            fetch('script.js')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('file-check').innerHTML += 
+                            '<div class="status success">✅ script.js found</div>';
+                    } else {
+                        document.getElementById('file-check').innerHTML += 
+                            '<div class="status error">❌ script.js not found</div>';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('file-check').innerHTML += 
+                        '<div class="status error">❌ script.js not found</div>';
+                });
+            
+            // Check HTML
+            fetch('index.html')
+                .then(response => {
+                    if (response.ok) {
+                        document.getElementById('file-check').innerHTML += 
+                            '<div class="status success">✅ index.html found</div>';
+                    } else {
+                        document.getElementById('file-check').innerHTML += 
+                            '<div class="status error">❌ index.html not found</div>';
+                    }
+                })
+                .catch(() => {
+                    document.getElementById('file-check').innerHTML += 
+                        '<div class="status error">❌ index.html not found</div>';
+                });
+            
+            // Browser info
+            document.getElementById('browser-info').innerHTML = `
+                <div class="status success">
+                    <strong>Browser:</strong> ${navigator.userAgent.split(' ').pop()}<br>
+                    <strong>Platform:</strong> ${navigator.platform}
+                </div>
+            `;
+        });
+        
+        function testLocalStorage() {
+            const resultsDiv = document.getElementById('test-results');
+            try {
+                localStorage.setItem('test', 'working');
+                const value = localStorage.getItem('test');
+                localStorage.removeItem('test');
+                
+                if (value === 'working') {
+                    resultsDiv.innerHTML = '<div class="status success">✅ localStorage is working correctly!</div>';
+                } else {
+                    resultsDiv.innerHTML = '<div class="status error">❌ localStorage test failed</div>';
+                }
+            } catch (e) {
+                resultsDiv.innerHTML = '<div class="status error">❌ localStorage is not available: ' + e.message + '</div>';
+            }
+        }
+    </script>
+</body>
+</html>
