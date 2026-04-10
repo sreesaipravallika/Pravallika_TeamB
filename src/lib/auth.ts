@@ -36,6 +36,7 @@ export interface Provider extends BaseUser {
   serviceCategory: string;
   location: string;
   phone: string;
+  isAvailable?: boolean;
 }
 
 export interface Admin extends BaseUser {

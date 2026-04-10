@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>QuickServ Database Console</title>
+    <title>QuickServ SQL Console</title>
     <style>
         * {
             margin: 0;
@@ -13,109 +13,110 @@
 
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #1e1e1e;
+            color: #d4d4d4;
             min-height: 100vh;
-            padding: 20px;
         }
 
         .container {
-            max-width: 1400px;
+            max-width: 1600px;
             margin: 0 auto;
+            padding: 20px;
         }
 
         .header {
-            background: white;
+            background: #252526;
             padding: 20px 30px;
-            border-radius: 10px;
+            border-radius: 8px;
             margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #007acc;
         }
 
         .header h1 {
-            color: #667eea;
+            color: #007acc;
             font-size: 28px;
             margin-bottom: 5px;
         }
 
         .header p {
-            color: #666;
+            color: #858585;
             font-size: 14px;
         }
 
-        .connection-info {
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
-
-        .connection-info h2 {
-            color: #333;
-            font-size: 18px;
-            margin-bottom: 15px;
-        }
-
-        .info-grid {
+        .layout {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-        }
-
-        .info-item {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 6px;
-            border-left: 4px solid #667eea;
-        }
-
-        .info-item label {
-            display: block;
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-            font-weight: 600;
-        }
-
-        .info-item value {
-            display: block;
-            font-size: 14px;
-            color: #333;
-            font-family: 'Courier New', monospace;
-        }
-
-        .main-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
+            grid-template-columns: 250px 1fr;
             gap: 20px;
+            height: calc(100vh - 140px);
         }
 
-        .panel {
-            background: white;
+        .sidebar {
+            background: #252526;
+            border-radius: 8px;
             padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
         }
 
-        .panel h2 {
-            color: #333;
-            font-size: 18px;
+        .sidebar h3 {
+            color: #007acc;
+            font-size: 14px;
             margin-bottom: 15px;
-            padding-bottom: 10px;
-            border-bottom: 2px solid #667eea;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .query-section {
-            grid-column: 1 / -1;
+        .table-list {
+            list-style: none;
+        }
+
+        .table-item {
+            padding: 10px;
+            margin-bottom: 5px;
+            background: #1e1e1e;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 14px;
+        }
+
+        .table-item:hover {
+            background: #007acc;
+            color: white;
+        }
+
+        .table-item.active {
+            background: #007acc;
+            color: white;
+        }
+
+        .main-panel {
+            background: #252526;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .query-editor {
+            padding: 20px;
+            border-bottom: 1px solid #3e3e42;
+        }
+
+        .query-editor h3 {
+            color: #007acc;
+            font-size: 16px;
+            margin-bottom: 10px;
         }
 
         textarea {
             width: 100%;
             min-height: 150px;
             padding: 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
-            font-family: 'Courier New', monospace;
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            color: #d4d4d4;
+            font-family: 'Consolas', 'Courier New', monospace;
             font-size: 14px;
             resize: vertical;
             margin-bottom: 15px;
@@ -123,259 +124,243 @@
 
         textarea:focus {
             outline: none;
-            border-color: #667eea;
+            border-color: #007acc;
         }
 
         .button-group {
             display: flex;
             gap: 10px;
-            flex-wrap: wrap;
         }
 
         button {
             padding: 10px 20px;
             border: none;
-            border-radius: 6px;
+            border-radius: 4px;
             font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #007acc;
             color: white;
         }
 
         .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+            background: #005a9e;
         }
 
         .btn-secondary {
-            background: #f8f9fa;
-            color: #333;
-            border: 2px solid #e0e0e0;
+            background: #3e3e42;
+            color: #d4d4d4;
         }
 
         .btn-secondary:hover {
-            background: #e9ecef;
+            background: #505050;
         }
 
-        .results {
-            margin-top: 20px;
-            max-height: 400px;
+        .results-panel {
+            flex: 1;
+            padding: 20px;
             overflow: auto;
+        }
+
+        .status {
+            padding: 10px 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
+        }
+
+        .status.success {
+            background: #1e3a1e;
+            color: #4ec9b0;
+            border: 1px solid #4ec9b0;
+        }
+
+        .status.error {
+            background: #3a1e1e;
+            color: #f48771;
+            border: 1px solid #f48771;
+        }
+
+        .status.info {
+            background: #1e2a3a;
+            color: #569cd6;
+            border: 1px solid #569cd6;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            background: #1e1e1e;
+            border-radius: 4px;
+            overflow: hidden;
         }
 
         th {
-            background: #667eea;
+            background: #007acc;
             color: white;
             padding: 12px;
             text-align: left;
+            font-weight: 600;
             position: sticky;
             top: 0;
         }
 
         td {
             padding: 10px 12px;
-            border-bottom: 1px solid #e0e0e0;
+            border-bottom: 1px solid #3e3e42;
+            color: #d4d4d4;
         }
 
         tr:hover {
-            background: #f8f9fa;
-        }
-
-        .status {
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-top: 15px;
-            font-size: 14px;
-        }
-
-        .status.success {
-            background: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status.error {
-            background: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
+            background: #2a2a2a;
         }
 
         .quick-queries {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
+            margin-top: 20px;
         }
 
         .quick-query-btn {
+            display: block;
+            width: 100%;
             text-align: left;
-            padding: 10px 15px;
-            background: #f8f9fa;
-            border: 2px solid #e0e0e0;
-            border-radius: 6px;
+            padding: 8px 10px;
+            margin-bottom: 5px;
+            background: #1e1e1e;
+            border: 1px solid #3e3e42;
+            border-radius: 4px;
+            color: #d4d4d4;
             cursor: pointer;
+            font-size: 12px;
             transition: all 0.2s;
-            font-size: 13px;
         }
 
         .quick-query-btn:hover {
-            background: #667eea;
+            background: #007acc;
             color: white;
-            border-color: #667eea;
+            border-color: #007acc;
         }
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-            margin-top: 15px;
+        .schema-info {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 15px;
+            font-size: 13px;
         }
 
-        .stat-card {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
+        .schema-info h4 {
+            color: #4ec9b0;
+            margin-bottom: 10px;
         }
 
-        .stat-card .number {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 5px;
+        .column-list {
+            list-style: none;
         }
 
-        .stat-card .label {
-            font-size: 12px;
-            opacity: 0.9;
+        .column-item {
+            padding: 5px 0;
+            color: #858585;
         }
 
-        @media (max-width: 768px) {
-            .main-content {
+        .column-name {
+            color: #9cdcfe;
+            font-weight: 600;
+        }
+
+        .column-type {
+            color: #4ec9b0;
+        }
+
+        @media (max-width: 1024px) {
+            .layout {
                 grid-template-columns: 1fr;
+            }
+            .sidebar {
+                height: auto;
             }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
         <div class="header">
-            <h1>⚡ QuickServ Database Console</h1>
-            <p>Manage and query your QuickServ database</p>
+            <h1>⚡ QuickServ SQL Console</h1>
+            <p>Execute SQL queries directly on your database</p>
         </div>
 
-        <!-- Connection Info -->
-        <div class="connection-info">
-            <h2>📊 Connection Information</h2>
-            <div class="info-grid">
-                <div class="info-item">
-                    <label>Database Type</label>
-                    <value>JSON File Database</value>
-                </div>
-                <div class="info-item">
-                    <label>Database File</label>
-                    <value>backend/database.json</value>
-                </div>
-                <div class="info-item">
-                    <label>Backend URL</label>
-                    <value>http://localhost:8080</value>
-                </div>
-                <div class="info-item">
-                    <label>Status</label>
-                    <value id="dbStatus">🟢 Connected</value>
-                </div>
-            </div>
-        </div>
+        <div class="layout">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <h3>📊 Tables</h3>
+                <ul class="table-list" id="tableList">
+                    <li class="table-item" onclick="loadTable('users')">👥 users</li>
+                    <li class="table-item" onclick="loadTable('bookings')">📅 bookings</li>
+                </ul>
 
-        <div class="main-content">
-            <!-- Quick Queries -->
-            <div class="panel">
-                <h2>⚡ Quick Queries</h2>
                 <div class="quick-queries">
-                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM users')">
-                        📋 View All Users
+                    <h3>⚡ Quick Queries</h3>
+                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM users;')">
+                        All Users
                     </button>
-                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM users WHERE role = \\'customer\\'')">
-                        👤 View Customers
+                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM users WHERE role = \\'customer\\';')">
+                        All Customers
                     </button>
-                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM users WHERE role = \\'provider\\'')">
-                        🏢 View Providers
+                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM users WHERE role = \\'provider\\';')">
+                        All Providers
                     </button>
-                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM bookings')">
-                        📅 View All Bookings
+                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM bookings;')">
+                        All Bookings
                     </button>
-                    <button class="quick-query-btn" onclick="setQuery('SELECT COUNT(*) as total FROM users')">
-                        🔢 Count Users
+                    <button class="quick-query-btn" onclick="setQuery('SELECT * FROM bookings WHERE status = \\'PENDING\\';')">
+                        Pending Bookings
                     </button>
-                    <button class="quick-query-btn" onclick="setQuery('SELECT COUNT(*) as total FROM bookings')">
-                        🔢 Count Bookings
+                    <button class="quick-query-btn" onclick="setQuery('SELECT COUNT(*) as total FROM users;')">
+                        Count Users
                     </button>
-                    <button class="quick-query-btn" onclick="loadStats()">
-                        📊 Show Statistics
+                    <button class="quick-query-btn" onclick="setQuery('SELECT COUNT(*) as total FROM bookings;')">
+                        Count Bookings
                     </button>
-                    <button class="quick-query-btn" onclick="viewRawData()">
-                        📄 View Raw JSON
+                    <button class="quick-query-btn" onclick="setQuery('SELECT b.*, u.name as customer_name FROM bookings b JOIN users u ON b.customer_id = u.id;')">
+                        Bookings with Customer Names
                     </button>
                 </div>
             </div>
 
-            <!-- Statistics -->
-            <div class="panel">
-                <h2>📈 Database Statistics</h2>
-                <div class="stats-grid" id="statsGrid">
-                    <div class="stat-card">
-                        <div class="number" id="totalUsers">-</div>
-                        <div class="label">Total Users</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="totalBookings">-</div>
-                        <div class="label">Total Bookings</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="totalCustomers">-</div>
-                        <div class="label">Customers</div>
-                    </div>
-                    <div class="stat-card">
-                        <div class="number" id="totalProviders">-</div>
-                        <div class="label">Providers</div>
+            <!-- Main Panel -->
+            <div class="main-panel">
+                <div class="query-editor">
+                    <h3>💻 SQL Query Editor</h3>
+                    <textarea id="queryInput" placeholder="Enter your SQL query here...
+
+Examples:
+SELECT * FROM users;
+SELECT * FROM bookings WHERE status = 'PENDING';
+INSERT INTO users (name, email, password, role) VALUES ('John', 'john@example.com', 'hash', 'customer');
+UPDATE bookings SET status = 'CONFIRMED' WHERE id = 1;
+DELETE FROM bookings WHERE id = 1;"></textarea>
+                    
+                    <div class="button-group">
+                        <button class="btn-primary" onclick="executeQuery()">▶️ Execute Query</button>
+                        <button class="btn-secondary" onclick="clearQuery()">🗑️ Clear</button>
+                        <button class="btn-secondary" onclick="loadSchema()">📋 Show Schema</button>
+                        <button class="btn-secondary" onclick="exportResults()">📥 Export CSV</button>
                     </div>
                 </div>
-            </div>
 
-            <!-- Query Section -->
-            <div class="panel query-section">
-                <h2>💻 SQL Query Editor</h2>
-                <textarea id="queryInput" placeholder="Enter your SQL query here...&#10;&#10;Examples:&#10;SELECT * FROM users&#10;SELECT * FROM bookings WHERE status = 'pending'&#10;SELECT COUNT(*) as total FROM users WHERE role = 'customer'"></textarea>
-                
-                <div class="button-group">
-                    <button class="btn-primary" onclick="executeQuery()">▶️ Execute Query</button>
-                    <button class="btn-secondary" onclick="clearQuery()">🗑️ Clear</button>
-                    <button class="btn-secondary" onclick="exportResults()">📥 Export Results</button>
+                <div class="results-panel">
+                    <div id="statusMessage"></div>
+                    <div id="results"></div>
                 </div>
-
-                <div id="statusMessage"></div>
-                <div id="results" class="results"></div>
             </div>
         </div>
     </div>
 
     <script>
-        // Load statistics on page load
-        window.onload = () => {
-            loadStats();
-        };
-
         function setQuery(query) {
             document.getElementById('queryInput').value = query;
         }
@@ -384,30 +369,6 @@
             document.getElementById('queryInput').value = '';
             document.getElementById('results').innerHTML = '';
             document.getElementById('statusMessage').innerHTML = '';
-        }
-
-        async function loadStats() {
-            try {
-                const response = await fetch('http://localhost:8080/api/health');
-                if (!response.ok) {
-                    document.getElementById('dbStatus').textContent = '🔴 Disconnected';
-                    return;
-                }
-
-                // Simulate stats (in real app, you'd fetch from API)
-                const data = await fetch('http://localhost:8080/api/database/view').then(r => r.json());
-                
-                document.getElementById('totalUsers').textContent = data.users.length;
-                document.getElementById('totalBookings').textContent = data.bookings.length;
-                document.getElementById('totalCustomers').textContent = 
-                    data.users.filter(u => u.role === 'customer').length;
-                document.getElementById('totalProviders').textContent = 
-                    data.users.filter(u => u.role === 'provider').length;
-                
-                showStatus('Statistics loaded successfully', 'success');
-            } catch (error) {
-                showStatus('Error loading statistics: ' + error.message, 'error');
-            }
         }
 
         async function executeQuery() {
@@ -419,43 +380,27 @@
             }
 
             try {
-                // Fetch database data
-                const data = await fetch('http://localhost:8080/api/database/view').then(r => r.json());
-                
-                // Simple query parser
-                let results = [];
-                const lowerQuery = query.toLowerCase();
+                const response = await fetch('http://localhost:8080/api/database/query', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query })
+                });
 
-                if (lowerQuery.includes('select') && lowerQuery.includes('from users')) {
-                    results = data.users;
-                    
-                    if (lowerQuery.includes("where role = 'customer'")) {
-                        results = results.filter(u => u.role === 'customer');
-                    } else if (lowerQuery.includes("where role = 'provider'")) {
-                        results = results.filter(u => u.role === 'provider');
-                    } else if (lowerQuery.includes("where role = 'admin'")) {
-                        results = results.filter(u => u.role === 'admin');
+                const data = await response.json();
+
+                if (data.success) {
+                    if (data.results) {
+                        displayResults(data.results);
+                        showStatus(`✅ Query executed successfully. ${data.rowCount} row(s) returned.`, 'success');
+                    } else {
+                        document.getElementById('results').innerHTML = '';
+                        showStatus(`✅ ${data.message}. ${data.changes || 0} row(s) affected.`, 'success');
                     }
-                    
-                    if (lowerQuery.includes('count(*)')) {
-                        results = [{ total: results.length }];
-                    }
-                } else if (lowerQuery.includes('select') && lowerQuery.includes('from bookings')) {
-                    results = data.bookings;
-                    
-                    if (lowerQuery.includes("where status = 'pending'")) {
-                        results = results.filter(b => b.status === 'pending');
-                    }
-                    
-                    if (lowerQuery.includes('count(*)')) {
-                        results = [{ total: results.length }];
-                    }
+                } else {
+                    showStatus(`❌ Error: ${data.error}`, 'error');
                 }
-
-                displayResults(results);
-                showStatus(`Query executed successfully. ${results.length} row(s) returned.`, 'success');
             } catch (error) {
-                showStatus('Error executing query: ' + error.message, 'error');
+                showStatus(`❌ Error: ${error.message}`, 'error');
             }
         }
 
@@ -463,7 +408,7 @@
             const resultsDiv = document.getElementById('results');
             
             if (!data || data.length === 0) {
-                resultsDiv.innerHTML = '<p style="padding: 20px; text-align: center; color: #666;">No results found</p>';
+                resultsDiv.innerHTML = '<p style="padding: 20px; text-align: center; color: #858585;">No results found</p>';
                 return;
             }
 
@@ -479,7 +424,7 @@
                 html += '<tr>';
                 keys.forEach(key => {
                     let value = row[key];
-                    if (value === null) value = '<em>NULL</em>';
+                    if (value === null) value = '<em style="color: #858585;">NULL</em>';
                     if (typeof value === 'object') value = JSON.stringify(value);
                     html += `<td>${value}</td>`;
                 });
@@ -496,34 +441,64 @@
             statusDiv.textContent = message;
         }
 
-        async function viewRawData() {
+        async function loadTable(tableName) {
+            setQuery(`SELECT * FROM ${tableName};`);
+            executeQuery();
+            
+            // Highlight active table
+            document.querySelectorAll('.table-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        async function loadSchema() {
             try {
-                const data = await fetch('http://localhost:8080/api/database/view').then(r => r.json());
-                const resultsDiv = document.getElementById('results');
-                resultsDiv.innerHTML = `<pre style="background: #f8f9fa; padding: 20px; border-radius: 6px; overflow: auto;">${JSON.stringify(data, null, 2)}</pre>`;
-                showStatus('Raw JSON data loaded', 'success');
+                const response = await fetch('http://localhost:8080/api/database/schema');
+                const schema = await response.json();
+                
+                let html = '';
+                for (const [tableName, columns] of Object.entries(schema)) {
+                    html += `<div class="schema-info">`;
+                    html += `<h4>📋 ${tableName}</h4>`;
+                    html += `<ul class="column-list">`;
+                    columns.forEach(col => {
+                        html += `<li class="column-item">`;
+                        html += `<span class="column-name">${col.name}</span> `;
+                        html += `<span class="column-type">${col.type}</span>`;
+                        if (col.pk) html += ` <span style="color: #f48771;">PRIMARY KEY</span>`;
+                        if (col.notnull) html += ` <span style="color: #ce9178;">NOT NULL</span>`;
+                        html += `</li>`;
+                    });
+                    html += `</ul></div>`;
+                }
+                
+                document.getElementById('results').innerHTML = html;
+                showStatus('Database schema loaded', 'info');
             } catch (error) {
-                showStatus('Error loading raw data: ' + error.message, 'error');
+                showStatus(`Error loading schema: ${error.message}`, 'error');
             }
         }
 
         function exportResults() {
-            const resultsDiv = document.getElementById('results');
-            const table = resultsDiv.querySelector('table');
+            const table = document.querySelector('#results table');
             
             if (!table) {
                 showStatus('No results to export', 'error');
                 return;
             }
 
-            // Convert table to CSV
             let csv = [];
             const rows = table.querySelectorAll('tr');
             
             rows.forEach(row => {
                 const cols = row.querySelectorAll('td, th');
                 const csvRow = [];
-                cols.forEach(col => csvRow.push(col.textContent));
+                cols.forEach(col => {
+                    let text = col.textContent;
+                    if (text.includes(',')) text = `"${text}"`;
+                    csvRow.push(text);
+                });
                 csv.push(csvRow.join(','));
             });
 
@@ -537,6 +512,11 @@
             
             showStatus('Results exported successfully', 'success');
         }
+
+        // Load schema on page load
+        window.onload = () => {
+            loadSchema();
+        };
     </script>
 </body>
 </html>

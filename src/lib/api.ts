@@ -280,3 +280,78 @@ export async function authenticatedRequest<T>(
     };
   }
 }
+
+/**
+ * API client object for making HTTP requests
+ */
+export const api = {
+  async get<T = any>(endpoint: string): Promise<T> {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "GET",
+      headers: {
+        "Authorization": token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  async post<T = any>(endpoint: string, data?: any): Promise<T> {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "POST",
+      headers: {
+        "Authorization": token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json",
+      },
+      body: data ? JSON.stringify(data) : undefined,
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  async put<T = any>(endpoint: string, data?: any): Promise<T> {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json",
+      },
+      body: data ? JSON.stringify(data) : undefined,
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+
+  async delete<T = any>(endpoint: string): Promise<T> {
+    const token = getAuthToken();
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      method: "DELETE",
+      headers: {
+        "Authorization": token ? `Bearer ${token}` : "",
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`API Error: ${response.statusText}`);
+    }
+
+    return response.json();
+  },
+};

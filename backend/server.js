@@ -525,9 +525,286 @@ app.get('/db-console', (req, res) => {
   res.sendFile(join(__dirname, 'db-console.html'));
 });
 
-// Serve database.json for console (read-only)
-app.get('/api/database/view', (req, res) => {
-  res.json(db.data || { users: [], bookings: [] });
+// Execute SQL-like query (for console)
+app.post('/api/database/query', (req, res) => {
+  try {
+    const { query } = req.body;
+    
+    if (!query) {
+      return res.status(400).json({ error: 'Query is required' });
+    }
+
+    const trimmedQuery = query.trim().toLowerCase();
+    
+    // Parse and execute query
+    if (trimmedQuery.startsWith('select')) {
+      let results = [];
+      
+      if (trimmedQuery.includes('from users')) {
+        results = db.data.users;
+        
+        // Apply WHERE filters
+        if (trimmedQuery.includes("where role = 'customer'") || trimmedQuery.includes('where role = "customer"')) {
+          results = results.filter(u => u.role === 'customer');
+        } else if (trimmedQuery.includes("where role = 'provider'") || trimmedQuery.includes('where role = "provider"')) {
+          results = results.filter(u => u.role === 'provider');
+        } else if (trimmedQuery.includes("where role = 'admin'") || trimmedQuery.includes('where role = "admin"')) {
+          results = results.filter(u => u.role === 'admin');
+        }
+        
+        // Handle COUNT
+        if (trimmedQuery.includes('count(*)')) {
+          results = [{ total: results.length }];
+        }
+      } else if (trimmedQuery.includes('from bookings')) {
+        results = db.data.bookings;
+        
+        // Apply WHERE filters
+        if (trimmedQuery.includes("where status = 'pending'") || trimmedQuery.includes('where status = "pending"')) {
+          results = results.filter(b => b.status === 'PENDING' || b.status === 'pending');
+        } else if (trimmedQuery.includes("where status = 'confirmed'") || trimmedQuery.includes('where status = "confirmed"')) {
+          results = results.filter(b => b.status === 'CONFIRMED' || b.status === 'confirmed');
+        }
+        
+        // Handle JOIN with users
+        if (trimmedQuery.includes('join users')) {
+          results = results.map(b => {
+            const customer = db.data.users.find(u => u.id === b.customer_id);
+            const provider = b.provider_id ? db.data.users.find(u => u.id === b.provider_id) : null;
+            return {
+              ...b,
+              customer_name: customer?.name,
+              customer_email: customer?.email,
+              provider_name: provider?.name
+            };
+          });
+        }
+        
+        // Handle COUNT
+        if (trimmedQuery.includes('count(*)')) {
+          results = [{ total: results.length }];
+        }
+      }
+      
+      res.json({ success: true, results, rowCount: results.length });
+    } else if (trimmedQuery.startsWith('insert')) {
+      res.json({ success: false, error: 'INSERT queries are not supported in console. Use the API endpoints instead.' });
+    } else if (trimmedQuery.startsWith('update')) {
+      res.json({ success: false, error: 'UPDATE queries are not supported in console. Use the API endpoints instead.' });
+    } else if (trimmedQuery.startsWith('delete')) {
+      res.json({ success: false, error: 'DELETE queries are not supported in console. Use the API endpoints instead.' });
+    } else {
+      res.json({ success: false, error: 'Unsupported query type. Only SELECT queries are supported.' });
+    }
+  } catch (error) {
+    res.status(400).json({ success: false, error: error.message });
+  }
+});
+
+// Get database schema
+app.get('/api/database/schema', (req, res) => {
+  try {
+    const schema = {
+      users: [
+        { name: 'id', type: 'INTEGER', pk: true, notnull: true },
+        { name: 'name', type: 'TEXT', pk: false, notnull: true },
+        { name: 'email', type: 'TEXT', pk: false, notnull: true },
+        { name: 'password', type: 'TEXT', pk: false, notnull: true },
+        { name: 'role', type: 'TEXT', pk: false, notnull: true },
+        { name: 'phone', type: 'TEXT', pk: false, notnull: false },
+        { name: 'location', type: 'TEXT', pk: false, notnull: false },
+        { name: 'business_name', type: 'TEXT', pk: false, notnull: false },
+        { name: 'service_category', type: 'TEXT', pk: false, notnull: false },
+        { name: 'created_at', type: 'DATETIME', pk: false, notnull: false }
+      ],
+      bookings: [
+        { name: 'id', type: 'INTEGER', pk: true, notnull: true },
+        { name: 'customer_id', type: 'INTEGER', pk: false, notnull: true },
+        { name: 'provider_id', type: 'INTEGER', pk: false, notnull: false },
+        { name: 'service_type', type: 'TEXT', pk: false, notnull: true },
+        { name: 'location', type: 'TEXT', pk: false, notnull: true },
+        { name: 'booking_date', type: 'TEXT', pk: false, notnull: true },
+        { name: 'service_date', type: 'TEXT', pk: false, notnull: true },
+        { name: 'time', type: 'TEXT', pk: false, notnull: true },
+        { name: 'description', type: 'TEXT', pk: false, notnull: false },
+        { name: 'status', type: 'TEXT', pk: false, notnull: false },
+        { name: 'created_at', type: 'DATETIME', pk: false, notnull: false }
+      ]
+    };
+    
+    res.json(schema);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Get table data
+app.get('/api/database/table/:tableName', (req, res) => {
+  try {
+    const { tableName } = req.params;
+    if (tableName === 'users') {
+      res.json(db.data.users);
+    } else if (tableName === 'bookings') {
+      res.json(db.data.bookings);
+    } else {
+      res.status(404).json({ error: 'Table not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+});
+
+// Toggle provider availability
+app.put('/api/provider/availability', authenticateToken, (req, res) => {
+  try {
+    if (req.user.role !== 'provider') {
+      return res.status(403).json({ message: 'Only providers can update availability' });
+    }
+
+    const { isAvailable } = req.body;
+    const user = db.data.users.find(u => u.id === req.user.id);
+    
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    user.is_available = isAvailable;
+    db.save();
+
+    res.json({
+      message: 'Availability updated successfully',
+      is_available: user.is_available
+    });
+  } catch (error) {
+    console.error('Error updating availability:', error);
+    res.status(500).json({ message: 'Failed to update availability' });
+  }
+});
+
+// Get available providers by service category
+app.get('/api/providers/available/:category', (req, res) => {
+  try {
+    const { category } = req.params;
+    const providers = db.data.users.filter(
+      u => u.role === 'provider' && 
+      u.service_category === category &&
+      u.is_available === true
+    );
+    res.json(providers);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Admin: Delete user
+app.delete('/api/admin/users/:userId', authenticateToken, (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    const userId = parseInt(req.params.userId);
+    const userIndex = db.data.users.findIndex(u => u.id === userId);
+    
+    if (userIndex === -1) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const deletedUser = db.data.users[userIndex];
+    db.data.users.splice(userIndex, 1);
+    
+    // Also delete related bookings
+    db.data.bookings = db.data.bookings.filter(
+      b => b.customer_id !== userId && b.provider_id !== userId
+    );
+    
+    db.save();
+
+    res.json({
+      message: 'User deleted successfully',
+      deletedUser: { id: deletedUser.id, name: deletedUser.name, email: deletedUser.email }
+    });
+  } catch (error) {
+    console.error('Error deleting user:', error);
+    res.status(500).json({ message: 'Failed to delete user' });
+  }
+});
+
+// Admin: Block/Unblock provider
+app.put('/api/admin/providers/:providerId/block', authenticateToken, (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    const providerId = parseInt(req.params.providerId);
+    const { isBlocked } = req.body;
+    
+    const provider = db.data.users.find(u => u.id === providerId && u.role === 'provider');
+    
+    if (!provider) {
+      return res.status(404).json({ message: 'Provider not found' });
+    }
+
+    provider.is_blocked = isBlocked;
+    if (isBlocked) {
+      provider.is_available = false; // Block also makes unavailable
+    }
+    
+    db.save();
+
+    res.json({
+      message: `Provider ${isBlocked ? 'blocked' : 'unblocked'} successfully`,
+      provider: { id: provider.id, name: provider.name, is_blocked: provider.is_blocked }
+    });
+  } catch (error) {
+    console.error('Error blocking provider:', error);
+    res.status(500).json({ message: 'Failed to update provider status' });
+  }
+});
+
+// Admin: Get system statistics
+app.get('/api/admin/statistics', authenticateToken, (req, res) => {
+  try {
+    if (req.user.role !== 'admin') {
+      return res.status(403).json({ message: 'Admin access required' });
+    }
+
+    const users = db.data.users;
+    const bookings = db.data.bookings;
+
+    const stats = {
+      users: {
+        total: users.length,
+        customers: users.filter(u => u.role === 'customer').length,
+        providers: users.filter(u => u.role === 'provider').length,
+        admins: users.filter(u => u.role === 'admin').length,
+        blockedProviders: users.filter(u => u.role === 'provider' && u.is_blocked).length
+      },
+      bookings: {
+        total: bookings.length,
+        pending: bookings.filter(b => b.status === 'PENDING').length,
+        confirmed: bookings.filter(b => b.status === 'CONFIRMED').length,
+        completed: bookings.filter(b => b.status === 'COMPLETED').length,
+        cancelled: bookings.filter(b => b.status === 'CANCELLED').length
+      },
+      activity: {
+        newUsersToday: users.filter(u => {
+          const today = new Date().toISOString().split('T')[0];
+          return u.created_at && u.created_at.startsWith(today);
+        }).length,
+        newBookingsToday: bookings.filter(b => {
+          const today = new Date().toISOString().split('T')[0];
+          return b.created_at && b.created_at.startsWith(today);
+        }).length
+      }
+    };
+
+    res.json(stats);
+  } catch (error) {
+    console.error('Error getting statistics:', error);
+    res.status(500).json({ message: 'Failed to get statistics' });
+  }
 });
 
 // Start server

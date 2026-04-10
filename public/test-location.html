@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Popup Test & Reset</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 600px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 28px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        
+        .status {
+            background: #f0f9ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        
+        .status-item {
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .label {
+            font-weight: bold;
+            color: #1e40af;
+        }
+        
+        .value {
+            color: #059669;
+        }
+        
+        .value.not-set {
+            color: #dc2626;
+        }
+        
+        .btn-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        
+        .btn {
+            padding: 15px 20px;
+            border-radius: 10px;
+            border: none;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: white;
+        }
+        
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+        
+        .btn-success {
+            background: #10b981;
+            color: white;
+        }
+        
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .info {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 8px;
+            font-size: 13px;
+            color: #92400e;
+        }
+        
+        .log {
+            background: #1e1e1e;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            margin-top: 20px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-item {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗺️ Location Popup Debugger</h1>
+        <p class="subtitle">Test and reset location popup settings</p>
+        
+        <div class="status">
+            <h3 style="margin-bottom: 10px; color: #1e40af;">Current LocalStorage Status:</h3>
+            <div class="status-item">
+                <span class="label">qs_location:</span> 
+                <span class="value" id="location-status">Checking...</span>
+            </div>
+            <div class="status-item">
+                <span class="label">qs_location_prompt_seen:</span> 
+                <span class="value" id="prompt-status">Checking...</span>
+            </div>
+        </div>
+        
+        <div class="btn-group">
+            <button class="btn btn-danger" onclick="clearAll()">
+                🗑️ Clear All Location Data (Reset Everything)
+            </button>
+            <button class="btn btn-success" onclick="clearAndReload()">
+                🔄 Clear & Reload App (Force Popup)
+            </button>
+            <button class="btn btn-primary" onclick="openApp()">
+                🚀 Open QuickServ App
+            </button>
+            <button class="btn btn-primary" onclick="checkStatus()">
+                🔍 Refresh Status
+            </button>
+        </div>
+        
+        <div class="info">
+            <strong>💡 How to see the popup:</strong><br>
+            1. Click "Clear & Reload App" button above<br>
+            2. Login with: john@plumbing.com / password123<br>
+            3. Popup should appear immediately!
+        </div>
+        
+        <div class="log" id="log">
+            <div class="log-item">Ready to debug...</div>
+        </div>
+    </div>
+    
+    <script>
+        function log(message) {
+            const logDiv = document.getElementById('log');
+            const time = new Date().toLocaleTimeString();
+            logDiv.innerHTML += `<div class="log-item">[${time}] ${message}</div>`;
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+        
+        function checkStatus() {
+            const location = localStorage.getItem('qs_location');
+            const promptSeen = localStorage.getItem('qs_location_prompt_seen');
+            
+            const locationEl = document.getElementById('location-status');
+            const promptEl = document.getElementById('prompt-status');
+            
+            if (location) {
+                locationEl.textContent = location;
+                locationEl.className = 'value';
+                log('✅ Location is SET: ' + location);
+            } else {
+                locationEl.textContent = 'Not set';
+                locationEl.className = 'value not-set';
+                log('❌ Location is NOT set');
+            }
+            
+            if (promptSeen) {
+                promptEl.textContent = promptSeen;
+                promptEl.className = 'value';
+                log('⚠️ Prompt has been SEEN (popup won\'t show)');
+            } else {
+                promptEl.textContent = 'Not set';
+                promptEl.className = 'value not-set';
+                log('✅ Prompt NOT seen (popup WILL show)');
+            }
+        }
+        
+        function clearAll() {
+            localStorage.removeItem('qs_location');
+            localStorage.removeItem('qs_location_prompt_seen');
+            log('🗑️ Cleared all location data');
+            checkStatus();
+            alert('✅ Location data cleared!\n\nNow open the app and login to see the popup.');
+        }
+        
+        function clearAndReload() {
+            localStorage.removeItem('qs_location');
+            localStorage.removeItem('qs_location_prompt_seen');
+            log('🗑️ Cleared all location data');
+            log('🔄 Redirecting to app...');
+            setTimeout(() => {
+                window.location.href = 'http://localhost:5173';
+            }, 500);
+        }
+        
+        function openApp() {
+            log('🚀 Opening QuickServ app...');
+            window.open('http://localhost:5173', '_blank');
+        }
+        
+        // Check status on load
+        window.onload = function() {
+            checkStatus();
+            log('🎯 Debugger ready!');
+        };
+    </script>
+</body>
+</html>

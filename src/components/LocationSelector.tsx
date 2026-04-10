@@ -50,8 +50,7 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
         console.error("Failed to parse saved location", e);
       }
     }
-    // Do NOT show permission prompt automatically
-    // User can click location button to set location manually
+    // Don't show popup automatically - only when user clicks "Use Current Location"
   }, []);
 
   // Close dropdown when clicking outside
@@ -130,6 +129,12 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
     );
   }
 
+  // Show permission prompt modal before detecting location
+  function handleUseCurrentLocation() {
+    setShowPermissionPrompt(true);
+    setIsOpen(false);
+  }
+
   // Handle manual location selection
   function selectLocation(city: string, state: string) {
     const locationData: LocationData = {
@@ -183,7 +188,7 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
 
             {/* Detect location button */}
             <button
-              onClick={detectLocation}
+              onClick={handleUseCurrentLocation}
               disabled={isDetecting}
               className="detect-btn"
             >
@@ -463,114 +468,196 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
           padding: 2rem 0;
         }
 
-        /* Permission Modal */
+        /* Permission Modal - Vibrant & Eye-catching */
         .permission-overlay {
           position: fixed;
           inset: 0;
-          background: hsl(240 30% 15% / 0.7);
-          backdrop-filter: blur(8px);
-          z-index: 100;
+          background: linear-gradient(135deg, rgba(102, 126, 234, 0.95) 0%, rgba(118, 75, 162, 0.95) 100%);
+          backdrop-filter: blur(12px);
+          z-index: 9999;
           display: flex;
           align-items: center;
           justify-content: center;
           padding: 1.5rem;
-          animation: fadeIn 0.3s ease-out;
+          animation: fadeIn 0.4s ease-out;
         }
 
         .permission-modal {
-          background: hsl(var(--card));
-          border-radius: var(--radius);
-          padding: 2.5rem 2rem;
-          max-width: 440px;
+          background: linear-gradient(135deg, #ffffff 0%, #f8f9ff 100%);
+          border-radius: 24px;
+          padding: 3rem 2.5rem;
+          max-width: 480px;
           width: 100%;
           text-align: center;
-          box-shadow: 0 25px 70px hsl(0 0% 0% / 0.3);
-          border: 2px solid hsl(var(--border));
+          box-shadow: 0 30px 90px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.1);
+          border: 3px solid #667eea;
+          animation: scaleIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+          position: relative;
+          overflow: hidden;
+          margin: auto;
+        }
+
+        .permission-modal::before {
+          content: '';
+          position: absolute;
+          top: -50%;
+          left: -50%;
+          width: 200%;
+          height: 200%;
+          background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+          animation: rotate 20s linear infinite;
         }
 
         .permission-icon {
-          width: 80px;
-          height: 80px;
+          width: 100px;
+          height: 100px;
           margin: 0 auto 1.5rem;
-          background: var(--gradient-primary);
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
           border-radius: 50%;
           display: flex;
           align-items: center;
           justify-content: center;
           color: white;
+          font-size: 48px;
+          box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+          animation: pulse 2s ease-in-out infinite;
+          position: relative;
+          z-index: 1;
         }
 
         .permission-title {
           font-family: 'Poppins', sans-serif;
-          font-size: 1.75rem;
-          font-weight: 800;
+          font-size: 2rem;
+          font-weight: 900;
           margin: 0 0 1rem;
-          color: hsl(var(--foreground));
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+          position: relative;
+          z-index: 1;
         }
 
         .permission-text {
-          font-size: 1rem;
-          line-height: 1.6;
-          color: hsl(var(--muted-foreground));
-          margin: 0 0 2rem;
+          font-size: 1.05rem;
+          line-height: 1.7;
+          color: #4a5568;
+          margin: 0 0 2.5rem;
+          position: relative;
+          z-index: 1;
         }
 
         .permission-actions {
           display: flex;
           flex-direction: column;
-          gap: 0.75rem;
+          gap: 1rem;
           margin-bottom: 1rem;
+          position: relative;
+          z-index: 1;
         }
 
         .permission-btn-primary {
           display: flex;
           align-items: center;
           justify-content: center;
-          gap: 0.6rem;
-          padding: 1rem 1.5rem;
-          background: var(--gradient-primary);
-          color: hsl(var(--primary-foreground));
+          gap: 0.75rem;
+          padding: 1.2rem 2rem;
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
           border: none;
-          border-radius: calc(var(--radius) - 4px);
-          font-weight: 700;
-          font-size: 1rem;
+          border-radius: 16px;
+          font-weight: 800;
+          font-size: 1.1rem;
           cursor: pointer;
-          transition: all 0.3s;
-          box-shadow: 0 8px 25px hsl(var(--primary) / 0.35);
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
         .permission-btn-primary:hover {
-          transform: translateY(-2px);
-          box-shadow: 0 12px 35px hsl(var(--primary) / 0.45);
+          transform: translateY(-4px) scale(1.02);
+          box-shadow: 0 15px 40px rgba(102, 126, 234, 0.6);
+        }
+        .permission-btn-primary:active {
+          transform: translateY(-2px) scale(0.98);
         }
 
         .permission-btn-secondary {
-          padding: 0.9rem 1.5rem;
-          background: hsl(var(--background));
-          color: hsl(var(--foreground));
-          border: 2px solid hsl(var(--border));
-          border-radius: calc(var(--radius) - 4px);
-          font-weight: 700;
-          font-size: 0.95rem;
+          padding: 1rem 1.5rem;
+          background: white;
+          color: #667eea;
+          border: 3px solid #667eea;
+          border-radius: 16px;
+          font-weight: 800;
+          font-size: 1rem;
           cursor: pointer;
-          transition: all 0.3s;
+          transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
         }
         .permission-btn-secondary:hover {
-          border-color: hsl(var(--primary));
-          background: hsl(var(--primary) / 0.05);
+          background: #667eea;
+          color: white;
+          transform: translateY(-2px);
+          box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
         }
 
         .permission-skip {
           background: none;
           border: none;
-          color: hsl(var(--muted-foreground));
-          font-size: 0.9rem;
-          font-weight: 600;
+          color: #718096;
+          font-size: 0.95rem;
+          font-weight: 700;
           cursor: pointer;
-          padding: 0.5rem;
-          transition: color 0.2s;
+          padding: 0.75rem;
+          transition: all 0.2s;
+          position: relative;
+          z-index: 1;
         }
         .permission-skip:hover {
-          color: hsl(var(--foreground));
+          color: #667eea;
+          transform: scale(1.05);
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+          from { 
+            opacity: 0;
+          }
+          to { 
+            opacity: 1;
+          }
+        }
+
+        @keyframes scaleIn {
+          from {
+            opacity: 0;
+            transform: scale(0.8) translateY(20px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+
+        @keyframes pulse {
+          0%, 100% {
+            transform: scale(1);
+            box-shadow: 0 15px 40px rgba(102, 126, 234, 0.5);
+          }
+          50% {
+            transform: scale(1.05);
+            box-shadow: 0 20px 50px rgba(102, 126, 234, 0.7);
+          }
+        }
+
+        @keyframes rotate {
+          from {
+            transform: rotate(0deg);
+          }
+          to {
+            transform: rotate(360deg);
+          }
         }
 
         /* Responsive */
@@ -590,11 +677,9 @@ export default function LocationSelector({ onLocationChange }: LocationSelectorP
           .permission-modal {
             padding: 2rem 1.5rem;
           }
-        }
-
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
+          .permission-title {
+            font-size: 1.5rem;
+          }
         }
 
         @keyframes spin {

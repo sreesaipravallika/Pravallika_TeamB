@@ -44,6 +44,8 @@ class JSONDatabase {
             location: location || null,
             business_name: businessName || null,
             service_category: serviceCategory || null,
+            is_available: true,
+            is_blocked: false,
             created_at: new Date().toISOString()
           };
           this.data.users.push(user);
